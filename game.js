@@ -23,111 +23,104 @@ function createPuzzle(imgUrl) {
 
     for (let row = 0; row < gridSize; row++) {
         for (let col = 0; col < gridSize; col++) {
-            const pieceIndex = row * gridSize + col;
             const piece = document.createElement('div');
             piece.className = 'puzzle-piece';
             piece.style.backgroundImage = `url(${imgUrl})`;
             piece.style.backgroundSize = `${gridSize * 100}%`;
             piece.style.backgroundPosition = `${(col * 100) / (gridSize - 1)}% ${(row * 100) / (gridSize - 1)}%`;
+            piece.dataset.row = row;
+            piece.dataset.col = col;
 
-            if (pieceIndex === gridSize * gridSize - 1) {
+            if (row === gridSize - 1 && col === gridSize - 1) {
                 piece.classList.add('empty');
-                emptyPosition.row = row;
-                emptyPosition.col = col;
             } else {
                 piece.draggable = true;
-                piece.dataset.row = row;
-                piece.dataset.col = col;
-
                 piece.addEventListener('dragstart', dragStart);
-                piece.addEventListener('dragover', dragOver);
-                piece.addEventListener('drop', dropPiece);
             }
 
             puzzlePieces.push(piece);
             grid.appendChild(piece);
         }
     }
+    grid.addEventListener('dragover', dragOver);
+    grid.addEventListener('drop', drop);
 }
 
 function shufflePuzzle() {
-    const shuffledPieces = [...puzzlePieces].sort(() => Math.random() - 0.5);
     const grid = document.getElementById('puzzle-grid');
-    puzzlePieces.forEach(piece => grid.removeChild(piece));
-    shuffledPieces.forEach(piece => grid.appendChild(piece));
+    const pieces = Array.from(grid.children);
+    for (let i = pieces.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        grid.appendChild(pieces[j]);
+    }
+    updatePuzzlePieces();
 }
 
-function dragStart(event) {
-    event.dataTransfer.setData('text/plain', JSON.stringify({
-        row: parseInt(event.target.dataset.row),
-        col: parseInt(event.target.dataset.col)
-    }));
+function dragStart(e) {
+    e.dataTransfer.setData('text/plain', e.target.dataset.row + ',' + e.target.dataset.col);
 }
 
-function dragOver(event) {
-    event.preventDefault();
+function dragOver(e) {
+    e.preventDefault();
 }
 
-function dropPiece(event) {
-    event.preventDefault();
-    
-    const draggedData = JSON.parse(event.dataTransfer.getData('text/plain'));
-    const targetRow = parseInt(event.target.dataset.row);
-    const targetCol = parseInt(event.target.dataset.col);
+function drop(e) {
+    e.preventDefault();
+    const [draggedRow, draggedCol] = e.dataTransfer.getData('text').split(',').map(Number);
+    const targetElement = e.target.closest('.puzzle-piece');
+    if (!targetElement) return;
 
-    if (isValidMove(draggedData.row, draggedData.col, targetRow, targetCol)) {
-        swapPieces(draggedData.row, draggedData.col, targetRow, targetCol);
+    const targetRow = parseInt(targetElement.dataset.row);
+    const targetCol = parseInt(targetElement.dataset.col);
+
+    if (isValidMove(draggedRow, draggedCol, targetRow, targetCol)) {
+        swapPieces(draggedRow, draggedCol, targetRow, targetCol);
+        updatePuzzlePieces();
         checkWinCondition();
     }
 }
 
 function isValidMove(draggedRow, draggedCol, targetRow, targetCol) {
-    return (
-        Math.abs(draggedRow - targetRow) + Math.abs(draggedCol - targetCol) === 1 &&
-        targetRow === emptyPosition.row &&
-        targetCol === emptyPosition.col
-    );
+    return Math.abs(draggedRow - targetRow) + Math.abs(draggedCol - targetCol) === 1 &&
+           (targetRow === emptyPosition.row && targetCol === emptyPosition.col);
 }
 
-function swapPieces(draggedRow, draggedCol, targetRow, targetCol) {
-    const draggedPieceIndex = draggedRow * gridSize + draggedCol;
-    const emptyPieceIndex = targetRow * gridSize + targetCol;
+function swapPieces(row1, col1, row2, col2) {
+    const index1 = row1 * gridSize + col1;
+    const index2 = row2 * gridSize + col2;
+    const temp = puzzlePieces[index1];
+    puzzlePieces[index1] = puzzlePieces[index2];
+    puzzlePieces[index2] = temp;
 
-    const draggedPiece = puzzlePieces[draggedPieceIndex];
-    const emptyPiecePlaceholder = puzzlePieces[emptyPieceIndex];
+    puzzlePieces[index1].dataset.row = row1;
+    puzzlePieces[index1].dataset.col = col1;
+    puzzlePieces[index2].dataset.row = row2;
+    puzzlePieces[index2].dataset.col = col2;
 
-    const tempNode = draggedPiece.cloneNode(true);
-    draggedPiece.parentNode.replaceChild(emptyPiecePlaceholder, draggedPiece);
-    emptyPiecePlaceholder.parentNode.replaceChild(tempNode, emptyPiecePlaceholder);
+    if (puzzlePieces[index2].classList.contains('empty')) {
+        emptyPosition.row = row2;
+        emptyPosition.col = col2;
+    } else {
+        emptyPosition.row = row1;
+        emptyPosition.col = col1;
+    }
+}
 
-    tempNode.dataset.row = targetRow;
-    tempNode.dataset.col = targetCol;
-    emptyPiecePlaceholder.dataset.row = draggedRow;
-    emptyPiecePlaceholder.dataset.col = draggedCol;
-
-    puzzlePieces[draggedPieceIndex] = emptyPiecePlaceholder;
-    puzzlePieces[emptyPieceIndex] = tempNode;
-
-    emptyPosition.row = draggedRow;
-    emptyPosition.col = draggedCol;
-
-    tempNode.addEventListener('dragstart', dragStart);
-    tempNode.addEventListener('dragover', dragOver);
-    tempNode.addEventListener('drop', dropPiece);
+function updatePuzzlePieces() {
+    const grid = document.getElementById('puzzle-grid');
+    grid.innerHTML = '';
+    puzzlePieces.forEach(piece => grid.appendChild(piece));
 }
 
 function checkWinCondition() {
-   for (let i = 0; i < puzzlePieces.length; i++) {
-       const row = Math.floor(i / gridSize);
-       const col = i % gridSize;
-       if (
-           !puzzlePieces[i].classList.contains('empty') &&
-           (parseInt(puzzlePieces[i].dataset.row) !== row || parseInt(puzzlePieces[i].dataset.col) !== col)
-       ) {
-           return;
-       }
-   }
-   alert("Puzzle solved!");
+    for (let i = 0; i < puzzlePieces.length; i++) {
+        const row = Math.floor(i / gridSize);
+        const col = i % gridSize;
+        if (parseInt(puzzlePieces[i].dataset.row) !== row || parseInt(puzzlePieces[i].dataset.col) !== col) {
+            return;
+        }
+    }
+    alert("Puzzle solved!");
 }
 
 document.getElementById('image-upload').addEventListener('change', function(e) {
