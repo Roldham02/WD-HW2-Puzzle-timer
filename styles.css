@@ -1,11 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+}
+
+#puzzle-container {
+    margin: 20px auto;
+    max-width: 600px;
+}
+
+#puzzle-grid {
+    display: grid;
+    gap: 2px;
+    margin: 10px 0;
+}
+
 .puzzle-piece {
-  aspect-ratio: 1;
-  background-position: calc(100%/(${gridSize}-1)) calc(100%/(${gridSize}-1));
-  cursor: move;
+    aspect-ratio: 1;
+    background-size: cover;
+    border: 1px solid #ddd;
+    cursor: pointer;
 }
 
 #timer-controls {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-  gap: 1rem;
+    margin: 20px 0;
+}
+
+#timer-controls input {
+    width: 80px;
+    padding: 5px;
+    margin: 0 5px;
+}
+
+#timer-display {
+    font-size: 2em;
+    margin: 10px 0;
+}
+
+#mouse-tracker {
+    font-weight: bold;
+    color: #666;
 }
