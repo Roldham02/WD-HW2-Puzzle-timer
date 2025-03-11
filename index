@@ -1,33 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image Puzzle Game with Countdown Timer</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <header>
+        <h1>Image Puzzle Game</h1>
+    </header>
 
-<div id="puzzle-container">
-  <input type="file" id="image-upload" accept="image/*">
-  <button onclick="shufflePuzzle()">Shuffle</button>
-  <div id="puzzle-grid"></div>
-</div>
+    <main>
+        <section id="puzzle-section">
+            <h2>Puzzle Game</h2>
+            <div id="puzzle-container">
+                <input type="file" id="image-upload" accept="image/*">
+                <button onclick="shufflePuzzle()">Shuffle</button>
+                <div id="puzzle-grid"></div>
+            </div>
+        </section>
 
-<script>
-let gridSize = 3; // Can be modified to 4x4
-let puzzlePieces = [];
+        <section id="timer-section">
+            <h2>Countdown Timer</h2>
+            <div id="timer-controls">
+                <input type="number" id="hours" min="0" placeholder="Hours" required>
+                <input type="number" id="minutes" min="0" max="59" placeholder="Minutes" required>
+                <input type="number" id="seconds" min="0" max="59" placeholder="Seconds" required>
+                <button onclick="startTimer()">Start</button>
+                <button onclick="pauseTimer()">Pause</button>
+                <button onclick="resetTimer()">Reset</button>
+                <div id="timer-display"></div>
+            </div>
+        </section>
 
-function createPuzzle(imgUrl) {
-  const container = document.getElementById('puzzle-grid');
-  container.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-  
-  for(let i=0; i<gridSize*gridSize; i++) {
-    const piece = document.createElement('div');
-    piece.className = 'puzzle-piece';
-    piece.style.backgroundImage = `url(${imgUrl})`;
-    piece.style.backgroundSize = `${gridSize * 100}%`;
-    piece.dataset.position = i;
-    puzzlePieces.push(piece);
-  }
-  shufflePuzzle();
-}
+        <section id="mouse-tracker-section">
+            <h2>Mouse Tracker</h2>
+            <div id="mouse-tracker"></div>
+        </section>
+    </main>
 
-function shufflePuzzle() {
-  const shuffled = puzzlePieces.sort(() => Math.random() - 0.5);
-  document.getElementById('puzzle-grid').replaceChildren(...shuffled);
-}
-</script>
+    <footer>
+        <p>&copy; 2025 Your Name. All rights reserved.</p>
+    </footer>
+
+    <script src="scripts/game.js"></script>
+</body>
+</html>
