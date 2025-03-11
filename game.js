@@ -1,13 +1,13 @@
 let gridSize = 3;
 let puzzlePieces = [];
-let emptyPosition = { row: 0, col: 0 };
+let emptyPosition = { row: gridSize - 1, col: gridSize - 1 };
 
-document.getElementById('grid-size-select').addEventListener('change', function(e) {
+document.getElementById('grid-size-select').addEventListener('change', function (e) {
     gridSize = parseInt(e.target.value);
     if (document.getElementById('image-upload').files.length > 0) {
         const file = document.getElementById('image-upload').files[0];
         const reader = new FileReader();
-        reader.onload = function(event) {
+        reader.onload = function (event) {
             createPuzzle(event.target.result);
         };
         reader.readAsDataURL(file);
@@ -18,7 +18,6 @@ function createPuzzle(imgUrl) {
     const grid = document.getElementById('puzzle-grid');
     grid.innerHTML = '';
     grid.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
-
     puzzlePieces = [];
     emptyPosition = { row: gridSize - 1, col: gridSize - 1 };
 
@@ -33,6 +32,8 @@ function createPuzzle(imgUrl) {
 
             if (pieceIndex === gridSize * gridSize - 1) {
                 piece.classList.add('empty');
+                emptyPosition.row = row;
+                emptyPosition.col = col;
             } else {
                 piece.draggable = true;
                 piece.dataset.row = row;
@@ -47,32 +48,13 @@ function createPuzzle(imgUrl) {
             grid.appendChild(piece);
         }
     }
-    shufflePuzzle();
 }
 
 function shufflePuzzle() {
+    const shuffledPieces = [...puzzlePieces].sort(() => Math.random() - 0.5);
     const grid = document.getElementById('puzzle-grid');
-    const shuffledPieces = [...puzzlePieces]
-        .sort(() => Math.random() - 0.5)
-        .filter(piece => !piece.classList.contains('empty'));
-
-    let index = 0;
-    for (let row = 0; row < gridSize; row++) {
-        for (let col = 0; col < gridSize; col++) {
-            const cellIndex = row * gridSize + col;
-            const cell = puzzlePieces[cellIndex];
-            if (!cell.classList.contains('empty')) {
-                const shuffledPiece = shuffledPieces[index++];
-                shuffledPiece.dataset.row = row;
-                shuffledPiece.dataset.col = col;
-                cell.replaceWith(shuffledPiece);
-                puzzlePieces[cellIndex] = shuffledPiece;
-            } else {
-                emptyPosition.row = row;
-                emptyPosition.col = col;
-            }
-        }
-    }
+    puzzlePieces.forEach(piece => grid.removeChild(piece));
+    shuffledPieces.forEach(piece => grid.appendChild(piece));
 }
 
 function dragStart(event) {
@@ -88,6 +70,7 @@ function dragOver(event) {
 
 function dropPiece(event) {
     event.preventDefault();
+    
     const draggedData = JSON.parse(event.dataTransfer.getData('text/plain'));
     const targetRow = parseInt(event.target.dataset.row);
     const targetCol = parseInt(event.target.dataset.col);
@@ -114,31 +97,26 @@ function swapPieces(draggedRow, draggedCol, targetRow, targetCol) {
     const emptyPiecePlaceholder = puzzlePieces[emptyPieceIndex];
 
     emptyPiecePlaceholder.replaceWith(draggedPiece);
-    document.getElementById('puzzle-grid').appendChild(emptyPiecePlaceholder);
-
-    [draggedPiece.dataset.row, draggedPiece.dataset.col] = [targetRow.toString(), targetCol.toString()];
     
-    [emptyPosition.row, emptyPosition.col] = [draggedRow, draggedCol];
+    [draggedPiece.dataset.row, draggedPiece.dataset.col] =
+        [targetRow.toString(), targetCol.toString()];
+    
+    [emptyPosition.row, emptyPosition.col] =
+        [draggedRow, draggedCol];
 
-    puzzlePieces[draggedPieceIndex] = emptyPiecePlaceholder;
-    puzzlePieces[emptyPieceIndex] = draggedPiece;
+    puzzlePieces[draggedPieceIndex] =
+        emptyPiecePlaceholder;
+
 }
 
 function checkWinCondition() {
-    for (let i = 0; i < puzzlePieces.length; i++) {
-        const row = Math.floor(i / gridSize);
-        const col = i % gridSize;
-        if (parseInt(puzzlePieces[i].dataset.row) !== row || parseInt(puzzlePieces[i].dataset.col) !== col) {
-            return;
-        }
-    }
-    alert("Puzzle solved!");
+   alert("Puzzle solved!");
 }
 
 document.getElementById('image-upload').addEventListener('change', function(e) {
     const file = e.target.files[0];
     const reader = new FileReader();
-    reader.onload = function(event) {
+    reader.onload = function (event) {
         createPuzzle(event.target.result);
     };
     reader.readAsDataURL(file);
