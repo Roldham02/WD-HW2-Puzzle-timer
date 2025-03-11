@@ -1,0 +1,11 @@
+.puzzle-piece {
+  aspect-ratio: 1;
+  background-position: calc(100%/(${gridSize}-1)) calc(100%/(${gridSize}-1));
+  cursor: move;
+}
+
+#timer-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 1rem;
+}
