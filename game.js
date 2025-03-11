@@ -34,82 +34,63 @@ function createPuzzle(imgUrl) {
             if (row === gridSize - 1 && col === gridSize - 1) {
                 piece.classList.add('empty');
             } else {
-                piece.draggable = true;
-                piece.addEventListener('dragstart', dragStart);
+                piece.addEventListener('click', movePiece);
             }
 
             puzzlePieces.push(piece);
             grid.appendChild(piece);
         }
     }
-    grid.addEventListener('dragover', dragOver);
-    grid.addEventListener('drop', drop);
 }
 
-function shufflePuzzle() {
-    const grid = document.getElementById('puzzle-grid');
-    const pieces = Array.from(grid.children);
-    for (let i = pieces.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        grid.appendChild(pieces[j]);
-    }
-    updatePuzzlePieces();
-}
+function movePiece(e) {
+    const clickedPiece = e.target;
+    const clickedRow = parseInt(clickedPiece.dataset.row);
+    const clickedCol = parseInt(clickedPiece.dataset.col);
 
-function dragStart(e) {
-    e.dataTransfer.setData('text/plain', e.target.dataset.row + ',' + e.target.dataset.col);
-}
-
-function dragOver(e) {
-    e.preventDefault();
-}
-
-function drop(e) {
-    e.preventDefault();
-    const [draggedRow, draggedCol] = e.dataTransfer.getData('text').split(',').map(Number);
-    const targetElement = e.target.closest('.puzzle-piece');
-    if (!targetElement) return;
-
-    const targetRow = parseInt(targetElement.dataset.row);
-    const targetCol = parseInt(targetElement.dataset.col);
-
-    if (isValidMove(draggedRow, draggedCol, targetRow, targetCol)) {
-        swapPieces(draggedRow, draggedCol, targetRow, targetCol);
-        updatePuzzlePieces();
+    if (isValidMove(clickedRow, clickedCol)) {
+        swapPieces(clickedRow, clickedCol, emptyPosition.row, emptyPosition.col);
+        updatePuzzleDisplay();
         checkWinCondition();
     }
 }
 
-function isValidMove(draggedRow, draggedCol, targetRow, targetCol) {
-    return Math.abs(draggedRow - targetRow) + Math.abs(draggedCol - targetCol) === 1 &&
-           (targetRow === emptyPosition.row && targetCol === emptyPosition.col);
+function isValidMove(row, col) {
+    return (Math.abs(row - emptyPosition.row) + Math.abs(col - emptyPosition.col) === 1);
 }
 
 function swapPieces(row1, col1, row2, col2) {
     const index1 = row1 * gridSize + col1;
     const index2 = row2 * gridSize + col2;
-    const temp = puzzlePieces[index1];
-    puzzlePieces[index1] = puzzlePieces[index2];
-    puzzlePieces[index2] = temp;
+    [puzzlePieces[index1], puzzlePieces[index2]] = [puzzlePieces[index2], puzzlePieces[index1]];
+    
+    [puzzlePieces[index1].dataset.row, puzzlePieces[index1].dataset.col] = [row1, col1];
+    [puzzlePieces[index2].dataset.row, puzzlePieces[index2].dataset.col] = [row2, col2];
 
-    puzzlePieces[index1].dataset.row = row1;
-    puzzlePieces[index1].dataset.col = col1;
-    puzzlePieces[index2].dataset.row = row2;
-    puzzlePieces[index2].dataset.col = col2;
-
-    if (puzzlePieces[index2].classList.contains('empty')) {
-        emptyPosition.row = row2;
-        emptyPosition.col = col2;
-    } else {
-        emptyPosition.row = row1;
-        emptyPosition.col = col1;
-    }
+    emptyPosition = { row: row1, col: col1 };
 }
 
-function updatePuzzlePieces() {
+function updatePuzzleDisplay() {
     const grid = document.getElementById('puzzle-grid');
     grid.innerHTML = '';
     puzzlePieces.forEach(piece => grid.appendChild(piece));
+}
+
+function shufflePuzzle() {
+    for (let i = 0; i < 1000; i++) {
+        const validMoves = [];
+        [-1, 1].forEach(diff => {
+            if (emptyPosition.row + diff >= 0 && emptyPosition.row + diff < gridSize) {
+                validMoves.push({row: emptyPosition.row + diff, col: emptyPosition.col});
+            }
+            if (emptyPosition.col + diff >= 0 && emptyPosition.col + diff < gridSize) {
+                validMoves.push({row: emptyPosition.row, col: emptyPosition.col + diff});
+            }
+        });
+        const randomMove = validMoves[Math.floor(Math.random() * validMoves.length)];
+        swapPieces(randomMove.row, randomMove.col, emptyPosition.row, emptyPosition.col);
+    }
+    updatePuzzleDisplay();
 }
 
 function checkWinCondition() {
