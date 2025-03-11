@@ -1,16 +1,6 @@
 body {
     font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
-}
-
-header {
-    text-align: center;
-}
-
-#puzzle-container {
-    text-align: center;
-    margin-top: 20px;
+    margin: 20px;
 }
 
 #puzzle-grid {
@@ -23,13 +13,27 @@ header {
 
 .puzzle-piece {
     background-size: cover;
-    cursor: grab;
-}
-
-.puzzle-piece:active {
-    cursor: grabbing;
+    cursor: pointer;
+    border: 1px solid #ccc;
 }
 
 .empty {
-    background-color: #ddd;
+    background-color: #ddd !important;
+    cursor: default !important;
+}
+
+#timer-controls input {
+    width: 80px;
+    margin: 5px;
+    padding: 4px;
+}
+
+#timer-display {
+    font-size: 24px;
+    margin: 10px;
+}
+
+#mouse-tracker {
+    font-weight: bold;
+    color: #444;
 }
