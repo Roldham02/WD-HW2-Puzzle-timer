@@ -96,20 +96,37 @@ function swapPieces(draggedRow, draggedCol, targetRow, targetCol) {
     const draggedPiece = puzzlePieces[draggedPieceIndex];
     const emptyPiecePlaceholder = puzzlePieces[emptyPieceIndex];
 
-    emptyPiecePlaceholder.replaceWith(draggedPiece);
-    
-    [draggedPiece.dataset.row, draggedPiece.dataset.col] =
-        [targetRow.toString(), targetCol.toString()];
-    
-    [emptyPosition.row, emptyPosition.col] =
-        [draggedRow, draggedCol];
+    const tempNode = draggedPiece.cloneNode(true);
+    draggedPiece.parentNode.replaceChild(emptyPiecePlaceholder, draggedPiece);
+    emptyPiecePlaceholder.parentNode.replaceChild(tempNode, emptyPiecePlaceholder);
 
-    puzzlePieces[draggedPieceIndex] =
-        emptyPiecePlaceholder;
+    tempNode.dataset.row = targetRow;
+    tempNode.dataset.col = targetCol;
+    emptyPiecePlaceholder.dataset.row = draggedRow;
+    emptyPiecePlaceholder.dataset.col = draggedCol;
 
+    puzzlePieces[draggedPieceIndex] = emptyPiecePlaceholder;
+    puzzlePieces[emptyPieceIndex] = tempNode;
+
+    emptyPosition.row = draggedRow;
+    emptyPosition.col = draggedCol;
+
+    tempNode.addEventListener('dragstart', dragStart);
+    tempNode.addEventListener('dragover', dragOver);
+    tempNode.addEventListener('drop', dropPiece);
 }
 
 function checkWinCondition() {
+   for (let i = 0; i < puzzlePieces.length; i++) {
+       const row = Math.floor(i / gridSize);
+       const col = i % gridSize;
+       if (
+           !puzzlePieces[i].classList.contains('empty') &&
+           (parseInt(puzzlePieces[i].dataset.row) !== row || parseInt(puzzlePieces[i].dataset.col) !== col)
+       ) {
+           return;
+       }
+   }
    alert("Puzzle solved!");
 }
 
