@@ -53,7 +53,9 @@ function movePiece(e) {
     if (isValidMove(clickedRow, clickedCol)) {
         swapPieces(clickedRow, clickedCol, emptyPosition.row, emptyPosition.col);
         updatePuzzleDisplay();
-        checkWinCondition();
+        if (checkWinCondition()) {
+            alert("Puzzle solved!");
+        }
     }
 }
 
@@ -65,10 +67,12 @@ function swapPieces(row1, col1, row2, col2) {
     const index1 = row1 * gridSize + col1;
     const index2 = row2 * gridSize + col2;
     [puzzlePieces[index1], puzzlePieces[index2]] = [puzzlePieces[index2], puzzlePieces[index1]];
+    
     puzzlePieces[index1].dataset.row = row1;
     puzzlePieces[index1].dataset.col = col1;
     puzzlePieces[index2].dataset.row = row2;
     puzzlePieces[index2].dataset.col = col2;
+    
     emptyPosition = { row: row1, col: col1 };
 }
 
@@ -102,10 +106,10 @@ function checkWinCondition() {
         const currentRow = parseInt(puzzlePieces[i].dataset.row);
         const currentCol = parseInt(puzzlePieces[i].dataset.col);
         if (correctRow !== currentRow || correctCol !== currentCol) {
-            return;
+            return false;
         }
     }
-    alert("Puzzle solved!");
+    return true;
 }
 
 document.getElementById('image-upload').addEventListener('change', function(e) {
