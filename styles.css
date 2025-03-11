@@ -12,14 +12,19 @@ body {
 #puzzle-grid {
     display: grid;
     gap: 2px;
-    margin: 10px 0;
+    width: 300px;
+    height: 300px;
+    margin: 20px auto;
 }
 
 .puzzle-piece {
-    aspect-ratio: 1;
     background-size: cover;
-    border: 1px solid #ddd;
-    cursor: pointer;
+    cursor: move;
+}
+
+.empty {
+    background-image: none !important;
+    background-color: #ddd;
 }
 
 #timer-controls {
