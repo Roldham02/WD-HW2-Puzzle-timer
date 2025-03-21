@@ -9,7 +9,15 @@ function initMap() {
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: 'OpenStreetMap contributors'
     }).addTo(map);
+    
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 100);
 }
+
+document.addEventListener('DOMContentLoaded', function() {
+    initMap();
+});
 
 document.getElementById('show-route').addEventListener('click', async function() {
     const startAddress = document.getElementById('start-address').value;
@@ -131,5 +139,3 @@ function updateTimerDisplay() {
 document.addEventListener('mousemove', function(e) {
     document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
 });
-
-window.onload = initMap;
