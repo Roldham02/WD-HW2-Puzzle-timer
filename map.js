@@ -91,20 +91,6 @@ function calculateAndDisplayRoute(start, end) {
         var summary = routes[0].summary;
         summary.totalDistance = summary.totalDistance / 1609.34;
         summary.totalTime = summary.totalTime / 3600;
-
-        var instructions = routes[0].instructions;
-        instructions.forEach(function(instruction) {
-            instruction.text = translateToEnglish(instruction.text);
-            if (instruction.distance) {
-                instruction.distance = instruction.distance / 1609.34;
-            }
-        });
-
-        routingControl._router.options.language = 'en';
-        routingControl._formatter.options.units = 'imperial';
-        routingControl._formatter.options.language = 'en';
-        routingControl._container.innerHTML = '';
-        routingControl._updateRouteEvent({route: routes[0]});
     });
 
     routingControl.on('routingerror', function(e) {
