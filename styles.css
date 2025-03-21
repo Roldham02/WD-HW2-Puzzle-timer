@@ -23,7 +23,8 @@ main {
 
 #map {
     height: 400px;
-    width: 800px;
+    width: 100%;
+    max-width: 800px;
     border: 1px solid #ccc;
     border-radius: 5px;
 }
@@ -85,4 +86,15 @@ main {
 #mouse-tracker {
     font-weight: bold;
     color: #444;
+}
+
+@media (max-width: 600px) {
+    #map-controls {
+        flex-direction: column;
+    }
+
+    #map-controls input {
+        width: 100%;
+        margin-bottom: 10px;
+    }
 }
