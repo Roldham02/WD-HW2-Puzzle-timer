@@ -68,7 +68,7 @@ function calculateAndDisplayRoute(start, end) {
 
     const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
         profile: "driving-car",
-        timeout: 60000, // Increased timeout to 60 seconds
+        timeout: 60000,
         language: 'en',
         units: 'mi'
     });
@@ -87,7 +87,6 @@ function calculateAndDisplayRoute(start, end) {
         var summary = routes[0].summary;
         summary.totalDistance = summary.totalDistance / 1609.34;
         summary.totalTime = summary.totalTime / 3600;
-        var avgSpeedMph = summary.totalDistance / summary.totalTime;
 
         var instructions = routes[0].instructions;
         instructions.forEach(function(instruction) {
@@ -96,13 +95,6 @@ function calculateAndDisplayRoute(start, end) {
                 instruction.distance = instruction.distance / 1609.34;
             }
         });
-
-        routingControl._router.options.language = 'en';
-        routingControl._formatter.options.units = 'imperial';
-        routingControl._formatter.options.language = 'en';
-        routingControl._container.innerHTML = '';
-        routingControl._updateLineOptions({styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]});
-        routingControl._updateRouteSelection({route: routes[0]});
     });
 
     routingControl.on('routingerror', function(e) {
