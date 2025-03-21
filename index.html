@@ -1,101 +1,50 @@
-let map;
-let directionsService;
-let directionsRenderer;
-let startMarker;
-let endMarker;
-let timerInterval;
-let remainingTime = 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Directions & Tracker</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+</head>
+<body>
+    <header>
+        <h1>Map Directions & Tracker</h1>
+    </header>
 
-function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 8
-    });
+    <main>
+        <section id="map-section">
+            <h2>Directions</h2>
+            <div id="map-controls">
+                <input type="text" id="start-address" placeholder="Enter start address">
+                <input type="text" id="end-address" placeholder="Enter end address">
+                <button id="show-route">Show Route</button>
+            </div>
+            <div id="map"></div>
+        </section>
 
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
-}
+        <section id="timer-section">
+            <h2>Countdown Timer</h2>
+            <div id="timer-controls">
+                <input type="number" id="hours" min="0" placeholder="Hours">
+                <input type="number" id="minutes" min="0" max="59" placeholder="Minutes">
+                <input type="number" id="seconds" min="0" max="59" placeholder="Seconds">
+                <button id="start-timer">Start</button>
+                <button id="pause-timer">Pause</button>
+                <button id="reset-timer">Reset</button>
+                <div id="timer-display">00:00:00</div>
+            </div>
+        </section>
 
-document.getElementById('show-route').addEventListener('click', function() {
-    const startAddress = document.getElementById('start-address').value;
-    const endAddress = document.getElementById('end-address').value;
+        <section id="mouse-tracker-section">
+            <h2>Mouse Tracker</h2>
+            <div id="mouse-tracker">X: 0, Y: 0</div>
+        </section>
+    </main>
 
-    if (startAddress && endAddress) {
-        calculateAndDisplayRoute(startAddress, endAddress);
-    }
-});
-
-function calculateAndDisplayRoute(start, end) {
-    directionsService.route({
-        origin: start,
-        destination: end,
-        travelMode: 'DRIVING'
-    }, function(response, status) {
-        if (status === 'OK') {
-            directionsRenderer.setDirections(response);
-            
-            if (startMarker) startMarker.setMap(null);
-            if (endMarker) endMarker.setMap(null);
-            
-            startMarker = new google.maps.Marker({
-                position: response.routes[0].legs[0].start_location,
-                map: map,
-                title: 'Start Location'
-            });
-
-            endMarker = new google.maps.Marker({
-                position: response.routes[0].legs[0].end_location,
-                map: map,
-                title: 'End Location'
-            });
-        } else {
-            alert('Directions request failed: ' + status);
-        }
-    });
-}
-
-document.getElementById('start-timer').addEventListener('click', function() {
-    const hours = parseInt(document.getElementById('hours').value) || 0;
-    const minutes = parseInt(document.getElementById('minutes').value) || 0;
-    const seconds = parseInt(document.getElementById('seconds').value) || 0;
-    remainingTime = hours * 3600 + minutes * 60 + seconds;
-    updateTimerDisplay();
-    
-    if (timerInterval) clearInterval(timerInterval);
-    
-    timerInterval = setInterval(() => {
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-            alert("Time's up!");
-        } else {
-            remainingTime--;
-            updateTimerDisplay();
-        }
-    }, 1000);
-});
-
-document.getElementById('pause-timer').addEventListener('click', function() {
-    clearInterval(timerInterval);
-});
-
-document.getElementById('reset-timer').addEventListener('click', function() {
-    clearInterval(timerInterval);
-    remainingTime = 0;
-    document.getElementById('hours').value = '';
-    document.getElementById('minutes').value = '';
-    document.getElementById('seconds').value = '';
-    updateTimerDisplay();
-});
-
-function updateTimerDisplay() {
-    const hours = Math.floor(remainingTime / 3600).toString().padStart(2, '0');
-    const minutes = Math.floor((remainingTime % 3600) / 60).toString().padStart(2, '0');
-    const seconds = (remainingTime % 60).toString().padStart(2, '0');
-    document.getElementById('timer-display').textContent = `${hours}:${minutes}:${seconds}`;
-}
-
-document.addEventListener('mousemove', function(e) {
-    document.getElementById('mouse-tracker').textContent = 
-        `X: ${e.clientX}, Y: ${e.clientY}`;
-});
+    <script src="map.js"></script>
+</body>
+</html>
