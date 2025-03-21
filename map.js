@@ -47,13 +47,15 @@ function calculateAndDisplayRoute(start, end) {
     const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
         profile: "driving-car",
         timeout: 30000,
+        language: 'en'  // Set the language to English
     });
 
     routingControl = L.Routing.control({
         waypoints: [start, end],
         router: osrRouter,
         routeWhileDragging: true,
-        showAlternatives: false
+        showAlternatives: false,
+        language: 'en'  // Set the language to English here as well
     }).addTo(map);
 }
 
