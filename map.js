@@ -1,20 +1,13 @@
 let map;
-let directionsService;
-let directionsRenderer;
-let startMarker;
-let endMarker;
+let routingControl;
 let timerInterval;
 let remainingTime = 0;
 
 function initMap() {
-    map = new google.maps.Map(document.getElementById('map'), {
-        center: {lat: -34.397, lng: 150.644},
-        zoom: 8
-    });
-
-    directionsService = new google.maps.DirectionsService();
-    directionsRenderer = new google.maps.DirectionsRenderer();
-    directionsRenderer.setMap(map);
+    map = L.map('map').setView([51.505, -0.09], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
 }
 
 document.getElementById('show-route').addEventListener('click', function() {
@@ -27,32 +20,17 @@ document.getElementById('show-route').addEventListener('click', function() {
 });
 
 function calculateAndDisplayRoute(start, end) {
-    directionsService.route({
-        origin: start,
-        destination: end,
-        travelMode: 'DRIVING'
-    }, function(response, status) {
-        if (status === 'OK') {
-            directionsRenderer.setDirections(response);
-            
-            if (startMarker) startMarker.setMap(null);
-            if (endMarker) endMarker.setMap(null);
-            
-            startMarker = new google.maps.Marker({
-                position: response.routes[0].legs[0].start_location,
-                map: map,
-                title: 'Start Location'
-            });
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
 
-            endMarker = new google.maps.Marker({
-                position: response.routes[0].legs[0].end_location,
-                map: map,
-                title: 'End Location'
-            });
-        } else {
-            alert('Directions request failed: ' + status);
-        }
-    });
+    routingControl = L.Routing.control({
+        waypoints: [
+            L.latLng(start),
+            L.latLng(end)
+        ],
+        routeWhileDragging: true
+    }).addTo(map);
 }
 
 document.getElementById('start-timer').addEventListener('click', function() {
@@ -99,3 +77,5 @@ document.addEventListener('mousemove', function(e) {
     document.getElementById('mouse-tracker').textContent = 
         `X: ${e.clientX}, Y: ${e.clientY}`;
 });
+
+window.onload = initMap;
