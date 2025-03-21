@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
@@ -20,11 +20,11 @@ function initMap() {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     initMap();
 });
 
-document.getElementById('show-route').addEventListener('click', async function() {
+document.getElementById('show-route').addEventListener('click', async function () {
     const startAddress = document.getElementById('start-address').value;
     const endAddress = document.getElementById('end-address').value;
 
@@ -66,37 +66,33 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        profile: "driving-car",
-        timeout: 60000,
-        language: 'en',
-        units: 'mi'
-    });
-
     routingControl = L.Routing.control({
         waypoints: [start, end],
-        router: osrRouter,
+        router: L.Routing.openRouteService(API_KEY, {
+            profile: 'driving-car',
+            timeout: 60000,
+            language: 'en',
+            units: 'mi'
+        }),
         routeWhileDragging: true,
         showAlternatives: false,
         language: 'en',
         units: 'imperial',
         lineOptions: {
-            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+            styles: [{ color: '#4a90e2', opacity: 0.7, weight: 6 }]
         },
-        createMarker: function() { return null; }
+        createMarker: function () { return null; }
     }).addTo(map);
 
-    routingControl.on('routesfound', function(e) {
-        var routes = e.routes;
-        var summary = routes[0].summary;
-        summary.totalDistance = summary.totalDistance / 1609.34;
-        summary.totalTime = summary.totalTime / 3600;
+    routingControl.on('routesfound', function (e) {
+        const routes = e.routes;
+        const summary = routes[0].summary;
+        console.log(`Distance: ${(summary.totalDistance / 1609.34).toFixed(2)} miles`);
+        console.log(`Time: ${(summary.totalTime / 3600).toFixed(2)} hours`);
     });
 
-    routingControl.on('routingerror', function(e) {
+    routingControl.on('routingerror', function (e) {
         console.error("Routing error:", e);
-        console.log("Start point:", start);
-        console.log("End point:", end);
         alert("Error calculating route. Please try again.");
     });
 }
@@ -105,7 +101,7 @@ function translateToEnglish(text) {
     return text;
 }
 
-document.getElementById('start-timer').addEventListener('click', function() {
+document.getElementById('start-timer').addEventListener('click', function () {
     const hours = parseInt(document.getElementById('hours').value) || 0;
     const minutes = parseInt(document.getElementById('minutes').value) || 0;
     const seconds = parseInt(document.getElementById('seconds').value) || 0;
@@ -125,11 +121,11 @@ document.getElementById('start-timer').addEventListener('click', function() {
     }, 1000);
 });
 
-document.getElementById('pause-timer').addEventListener('click', function() {
+document.getElementById('pause-timer').addEventListener('click', function () {
     clearInterval(timerInterval);
 });
 
-document.getElementById('reset-timer').addEventListener('click', function() {
+document.getElementById('reset-timer').addEventListener('click', function () {
     clearInterval(timerInterval);
     remainingTime = 0;
     document.getElementById('hours').value = '';
@@ -145,6 +141,6 @@ function updateTimerDisplay() {
     document.getElementById('timer-display').textContent = `${hours}:${minutes}:${seconds}`;
 }
 
-document.addEventListener('mousemove', function(e) {
+document.addEventListener('mousemove', function (e) {
     document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
 });
