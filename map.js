@@ -65,7 +65,7 @@ function calculateAndDisplayRoute(start, end) {
         routeWhileDragging: true,
         showAlternatives: false,
         language: 'en',
-        unitSystem: L.Routing.UnitSystem.Imperial
+        units: 'imperial'
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
@@ -84,7 +84,7 @@ function calculateAndDisplayRoute(start, end) {
         });
 
         routingControl._router.options.language = 'en';
-        routingControl._formatter.options.unitSystem = L.Routing.UnitSystem.Imperial;
+        routingControl._formatter.options.units = 'imperial';
         routingControl._formatter.options.language = 'en';
         routingControl._container.innerHTML = '';
         routingControl._updateLineOptions({styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]});
