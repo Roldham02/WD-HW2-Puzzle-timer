@@ -1,34 +1,85 @@
 body {
     font-family: Arial, sans-serif;
     margin: 20px;
+    background-color: #f0f0f0;
+}
+
+header {
+    background-color: #007bff;
+    color: white;
+    padding: 10px;
+    text-align: center;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#map-section {
+    margin-bottom: 20px;
 }
 
 #map {
     height: 400px;
-    width: 100%;
-    margin: 20px 0;
+    width: 800px;
     border: 1px solid #ccc;
+    border-radius: 5px;
 }
 
 #map-controls {
     margin: 10px 0;
+    display: flex;
+    justify-content: space-between;
 }
 
 #map-controls input {
     width: 300px;
     padding: 8px;
     margin-right: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#map-controls button {
+    padding: 8px 15px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+}
+
+#timer-section {
+    margin-bottom: 20px;
+}
+
+#timer-controls {
+    display: flex;
+    justify-content: space-between;
+    width: 400px;
 }
 
 #timer-controls input {
     width: 80px;
-    margin: 5px;
     padding: 4px;
+    margin: 5px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+#timer-controls button {
+    padding: 4px 10px;
+    border-radius: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
 }
 
 #timer-display {
     font-size: 24px;
     margin: 10px;
+    font-weight: bold;
 }
 
 #mouse-tracker {
