@@ -3,51 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>map plus timer</title>
+    <title>Leaflet Map with OpenRouteService Routing</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.css" />
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine@latest/dist/leaflet-routing-machine.min.js"></script>
     <script src="https://unpkg.com/@gegeweb/leaflet-routing-machine-openroute@latest/dist/leaflet-routing-openroute.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Map</h1>
-    </header>
-
-    <main>
-        <section id="map-section">
-            <h2>Directions</h2>
-            <div id="map-controls">
-                <input type="text" id="start-address" placeholder="Enter start location (e.g., New York City)">
-                <input type="text" id="end-address" placeholder="Enter end location (e.g., Los Angeles)">
-                <button id="show-route">Show Route</button>
-            </div>
-            <div id="map"></div>
-        </section>
-
-        <section id="timer-section">
-            <h2>Countdown Timer</h2>
-            <div id="timer-controls">
-                <input type="number" id="hours" min="0" placeholder="Hours">
-                <input type="number" id="minutes" min="0" max="59" placeholder="Minutes">
-                <input type="number" id="seconds" min="0" max="59" placeholder="Seconds">
-                <button id="start-timer">Start</button>
-                <button id="pause-timer">Pause</button>
-                <button id="reset-timer">Reset</button>
-            </div>
-            <div id="timer-display-container">
-                <div id="timer-display">00:00:00</div>
-            </div>
-        </section>
-
-        <section id="mouse-tracker-section">
-            <h2>Mouse Tracker</h2>
-            <div id="mouse-tracker">X: 0, Y: 0</div>
-        </section>
-    </main>
-
+    <div id="map" style="height: 500px;"></div>
+    <input type="text" id="start-address" placeholder="Start Address">
+    <input type="text" id="end-address" placeholder="End Address">
+    <button id="show-route">Show Route</button>
     <script src="map.js"></script>
 </body>
 </html>
