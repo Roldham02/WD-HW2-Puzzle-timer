@@ -46,7 +46,13 @@ function calculateAndDisplayRoute(start, end) {
 
     routingControl = L.Routing.control({
         waypoints: [start, end],
-        router: new L.Routing.openrouteservice(API_KEY),
+        router: new L.Routing.OpenRouteService(API_KEY, {
+            profile: 'driving-car',
+            service: 'directions',
+            api_version: 'v2',
+            host: 'https://api.openrouteservice.org',
+            timeout: 30 * 1000
+        }),
         routeWhileDragging: true,
         showAlternatives: false
     }).addTo(map);
