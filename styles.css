@@ -1,100 +1,121 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 20px;
-    background-color: #f0f0f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #1a1a1a;
+    color: #e0e0e0;
 }
 
 header {
-    background-color: #f9e8b4;
-    color: white;
-    padding: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: #ffffff;
+    padding: 20px;
     text-align: center;
+    border-radius: 10px;
+    margin-bottom: 30px;
 }
 
 main {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+section {
+    background-color: #2a2a2a;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 30px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #4a90e2;
+    margin-bottom: 20px;
 }
 
 #map-section {
-    margin-bottom: 20px;
+    margin-bottom: 30px;
 }
 
 #map {
     height: 400px;
     width: 100%;
-    max-width: 800px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
+    border: none;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 #map-controls {
-    margin: 10px 0;
     display: flex;
-    justify-content: space-between;
-}
-
-#map-controls input {
-    width: 300px;
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-}
-
-#map-controls button {
-    padding: 8px 15px;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: grey;
-    border: none;
-}
-
-#timer-section {
+    flex-wrap: wrap;
+    gap: 10px;
     margin-bottom: 20px;
+}
+
+input[type="text"], input[type="number"] {
+    flex: 1;
+    min-width: 200px;
+    padding: 12px;
+    border-radius: 5px;
+    border: none;
+    background-color: #3a3a3a;
+    color: #e0e0e0;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 20px;
+    border-radius: 5px;
+    border: none;
+    background-color: #4a90e2;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background-color: #3a7bc8;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(74, 144, 226, 0.3);
+}
+
+button:active {
+    transform: translateY(0);
+    box-shadow: none;
 }
 
 #timer-controls {
     display: flex;
-    justify-content: space-between;
-    width: 400px;
-}
-
-#timer-controls input {
-    width: 80px;
-    padding: 4px;
-    margin: 5px;
-    border-radius: 5px;
-    border: 2px solid #ccc;
-}
-
-#timer-controls button {
-    padding: 4px 10px;
-    border-radius: 5px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
 }
 
 #timer-display {
-    font-size: 24px;
-    margin: 10px;
+    font-size: 36px;
+    margin: 20px 0;
+    text-align: center;
     font-weight: bold;
+    color: #4a90e2;
 }
 
 #mouse-tracker {
-    font-weight: bold;
-    color: #444;
+    font-size: 18px;
+    text-align: center;
+    color: #a0a0a0;
 }
 
-@media (max-width: 600px) {
-    #map-controls {
+@media (max-width: 768px) {
+    #map-controls, #timer-controls {
         flex-direction: column;
     }
 
-    #map-controls input {
+    input[type="text"], input[type="number"], button {
         width: 100%;
-        margin-bottom: 10px;
     }
 }
