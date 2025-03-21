@@ -44,19 +44,9 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = L.Routing.openrouteservice(API_KEY, {
-        "timeout": 30 * 1000,
-        "format": "json",
-        "host": "https://api.openrouteservice.org",
-        "service": "directions",
-        "api_version": "v2",
-        "profile": "driving-car",
-        "routingQueryParams": {
-            "attributes": ["avgspeed", "percentage"],
-            "language": "en",
-            "maneuvers": "true",
-            "preference": "recommended"
-        }
+    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
+        profile: "driving-car",
+        timeout: 30000,
     });
 
     routingControl = L.Routing.control({
