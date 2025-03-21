@@ -79,7 +79,10 @@ function calculateAndDisplayRoute(start, end) {
         routeWhileDragging: true,
         showAlternatives: false,
         language: 'en',
-        units: 'imperial'
+        units: 'imperial',
+        lineOptions: {
+            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+        }
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
