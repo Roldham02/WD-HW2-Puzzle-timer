@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: 'OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
@@ -82,7 +82,8 @@ function calculateAndDisplayRoute(start, end) {
         units: 'imperial',
         lineOptions: {
             styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-        }
+        },
+        createMarker: function() { return null; }
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
@@ -98,6 +99,12 @@ function calculateAndDisplayRoute(start, end) {
                 instruction.distance = instruction.distance / 1609.34;
             }
         });
+
+        routingControl._router.options.language = 'en';
+        routingControl._formatter.options.units = 'imperial';
+        routingControl._formatter.options.language = 'en';
+        routingControl._container.innerHTML = '';
+        routingControl._updateRouteEvent({route: routes[0]});
     });
 
     routingControl.on('routingerror', function(e) {
