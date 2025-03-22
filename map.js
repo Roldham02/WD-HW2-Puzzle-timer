@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
@@ -69,7 +69,7 @@ function calculateAndDisplayRoute(start, end) {
     const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
         profile: "driving-car",
         timeout: 60000,
-        language: 'en',
+        language: 'en-us',
         units: 'mi'
     });
 
