@@ -69,8 +69,13 @@ function calculateAndDisplayRoute(start, end) {
     const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
         profile: "driving-car",
         timeout: 60000,
-        language: 'en',
-        units: 'mi'
+        service: "directions",
+        api_version: "v2",
+        language: "en", // Ensure English instructions
+        routingQueryParams: {
+            language: "en" // Explicitly pass language in query
+        },
+        units: "mi"
     });
 
     routingControl = L.Routing.control({
@@ -78,32 +83,21 @@ function calculateAndDisplayRoute(start, end) {
         router: osrRouter,
         routeWhileDragging: true,
         showAlternatives: false,
-        language: 'en',
         units: 'imperial',
         lineOptions: {
-            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+            styles: [{ color: '#4a90e2', opacity: 0.7, weight: 6 }]
         }
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
-        var routes = e.routes;
-        var summary = routes[0].summary;
-        summary.totalDistance = summary.totalDistance / 1609.34;
-        summary.totalTime = summary.totalTime / 3600;
-
-        var instructions = routes[0].instructions;
-        instructions.forEach(function(instruction) {
-            instruction.text = translateToEnglish(instruction.text);
-            if (instruction.distance) {
-                instruction.distance = instruction.distance / 1609.34;
-            }
-        });
+        const routes = e.routes;
+        const summary = routes[0].summary;
+        console.log(`Distance: ${(summary.totalDistance / 1609.34).toFixed(2)} miles`);
+        console.log(`Time: ${(summary.totalTime / 3600).toFixed(2)} hours`);
     });
 
     routingControl.on('routingerror', function(e) {
         console.error("Routing error:", e);
-        console.log("Start point:", start);
-        console.log("End point:", end);
         alert("Error calculating route. Please try again.");
     });
 }
