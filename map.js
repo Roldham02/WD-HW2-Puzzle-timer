@@ -66,18 +66,15 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        profile: "driving-car",
-        timeout: 60000,
-        language: 'en-us',
-        units: 'mi'
-    });
+    const osrRouter = new L.Routing.OpenRouteService(API_KEY);
+    osrRouter.options.profile = "driving-car";
+    osrRouter.options.language = "en";
 
     try {
         routingControl = L.Routing.control({
-            language: 'en',
             waypoints: [start, end],
             router: osrRouter,
+            language: 'en',
             routeWhileDragging: true,
             showAlternatives: true,
             units: 'imperial',
@@ -111,6 +108,7 @@ function calculateAndDisplayRoute(start, end) {
         alert("Failed to initialize routing. Please try again.");
     }
 }
+
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
