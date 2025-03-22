@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: 'OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
@@ -73,42 +73,44 @@ function calculateAndDisplayRoute(start, end) {
         units: 'mi'
     });
 
-    routingControl = L.Routing.control({
-
-        language: 'en',
-        waypoints: [start, end],
-        router: osrRouter,
-        routeWhileDragging: true,
-        showAlternatives: true,
-        units: 'imperial',
-        lineOptions: {
-            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-        }
-    }).addTo(map);
-
-    routingControl.on('routesfound', function(e) {
-        var routes = e.routes;
-        var summary = routes[0].summary;
-        summary.totalDistance = summary.totalDistance / 1609.34;
-        summary.totalTime = summary.totalTime / 3600;
-
-        var instructions = routes[0].instructions;
-        instructions.forEach(function(instruction) {
-            instruction.text = translateToEnglish(instruction.text);
-            if (instruction.distance) {
-                instruction.distance = instruction.distance / 1609.34;
+    try {
+        routingControl = L.Routing.control({
+            language: 'en',
+            waypoints: [start, end],
+            router: osrRouter,
+            routeWhileDragging: true,
+            showAlternatives: true,
+            units: 'imperial',
+            lineOptions: {
+                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
             }
+        }).addTo(map);
+
+        routingControl.on('routesfound', function(e) {
+            var routes = e.routes;
+            var summary = routes[0].summary;
+            summary.totalDistance = summary.totalDistance / 1609.34;
+            summary.totalTime = summary.totalTime / 3600;
+
+            var instructions = routes[0].instructions;
+            instructions.forEach(function(instruction) {
+                if (instruction.distance) {
+                    instruction.distance = instruction.distance / 1609.34;
+                }
+            });
         });
-    });
 
-    routingControl.on('routingerror', function(e) {
-        console.error("Routing error:", e);
-        console.log("Start point:", start);
-        console.log("End point:", end);
-        alert("Error calculating route. Please try again.");
-    });
+        routingControl.on('routingerror', function(e) {
+            console.error("Routing error:", e);
+            console.log("Start point:", start);
+            console.log("End point:", end);
+            alert("Error calculating route. Please try again.");
+        });
+    } catch (error) {
+        console.error("Routing initialization failed:", error);
+        alert("Failed to initialize routing. Please try again.");
+    }
 }
-
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
@@ -126,6 +128,7 @@ document.getElementById('start-timer').addEventListener('click', function() {
         } else {
             remainingTime--;
             updateTimerDisplay();
+            saveTimerState();
         }
     }, 1000);
 });
@@ -141,6 +144,7 @@ document.getElementById('reset-timer').addEventListener('click', function() {
     document.getElementById('minutes').value = '';
     document.getElementById('seconds').value = '';
     updateTimerDisplay();
+    saveTimerState();
 });
 
 function updateTimerDisplay() {
@@ -150,6 +154,22 @@ function updateTimerDisplay() {
     document.getElementById('timer-display').textContent = `${hours}:${minutes}:${seconds}`;
 }
 
+function saveTimerState() {
+    localStorage.setItem('timerState', JSON.stringify({
+        remainingTime,
+        lastUpdated: Date.now()
+    }));
+}
+
 document.addEventListener('mousemove', function(e) {
     document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+    const savedState = JSON.parse(localStorage.getItem('timerState'));
+    if (savedState) {
+        const elapsedTime = Math.floor((Date.now() - savedState.lastUpdated) / 1000);
+        remainingTime = Math.max(0, savedState.remainingTime - elapsedTime);
+        updateTimerDisplay();
+    }
 });
