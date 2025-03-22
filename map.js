@@ -75,12 +75,11 @@ function calculateAndDisplayRoute(start, end) {
 
     routingControl = L.Routing.control({
 
-        language: 'en',
         waypoints: [start, end],
         router: osrRouter,
         routeWhileDragging: true,
         showAlternatives: true,
-        units: 'imperial',
+        language: 'en',
         lineOptions: {
             styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
         }
@@ -89,14 +88,7 @@ function calculateAndDisplayRoute(start, end) {
     routingControl.on('routesfound', function(e) {
         var routes = e.routes;
         var summary = routes[0].summary;
-        summary.totalDistance = summary.totalDistance / 1609.34;
-        summary.totalTime = summary.totalTime / 3600;
 
-        var instructions = routes[0].instructions;
-        instructions.forEach(function(instruction) {
-            instruction.text = translateToEnglish(instruction.text);
-            if (instruction.distance) {
-                instruction.distance = instruction.distance / 1609.34;
             }
         });
     });
