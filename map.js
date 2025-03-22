@@ -74,12 +74,12 @@ function calculateAndDisplayRoute(start, end) {
     });
 
     routingControl = L.Routing.control({
-        
+
+        language: 'en',
         waypoints: [start, end],
         router: osrRouter,
         routeWhileDragging: true,
         showAlternatives: true,
-        language: 'en',
         units: 'imperial',
         lineOptions: {
             styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
@@ -109,9 +109,6 @@ function calculateAndDisplayRoute(start, end) {
     });
 }
 
-function translateToEnglish(text) {
-    return text;
-}
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
