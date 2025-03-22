@@ -74,10 +74,18 @@ function calculateAndDisplayRoute(start, end) {
     });
 
     routingControl = L.Routing.control({
+
+        router: L.routing.mapbox(this.key.MapboxKey),   
+				
+		language: 'en',
+		formatter:  new L.Routing.Formatter({
+			language: 'en' 
+		}),
+        
         waypoints: [start, end],
         router: osrRouter,
         routeWhileDragging: true,
-        showAlternatives: false,
+        showAlternatives: true,
         language: 'en',
         units: 'imperial',
         lineOptions: {
