@@ -32,6 +32,7 @@ document.getElementById('show-route').addEventListener('click', async function()
         try {
             const startCoords = await geocode(startAddress);
             const endCoords = await geocode(endAddress);
+            console.log("Start coordinates:", startCoords, "End coordinates:", endCoords);
             calculateAndDisplayRoute(startCoords, endCoords);
         } catch (error) {
             console.error("Error calculating route:", error);
@@ -66,86 +67,30 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        profile: "driving-car",
-        timeout: 60000,
-        service: "directions",
-        api_version: "v2",
-        language: "en", // Ensure English instructions
-        routingQueryParams: {
-            language: "en" // Explicitly pass language in query
-        },
-        units: "mi"
-    });
-
     routingControl = L.Routing.control({
         waypoints: [start, end],
-        router: osrRouter,
+        router: new L.Routing.OpenRouteService(API_KEY, {
+            profile: "driving-car",
+            language: "en",
+            units: "mi",
+            api_version: "v2",
+            routingQueryParams: {
+                language: "en"
+            }
+        }),
+        formatter: new L.Routing.Formatter({
+            language: "en",
+            units: "imperial"
+        }),
         routeWhileDragging: true,
         showAlternatives: false,
-        units: 'imperial',
         lineOptions: {
-            styles: [{ color: '#4a90e2', opacity: 0.7, weight: 6 }]
+            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
         }
     }).addTo(map);
 
     routingControl.on('routesfound', function(e) {
         const routes = e.routes;
+        if (!routes || routes.length === 0) return;
+
         const summary = routes[0].summary;
-        console.log(`Distance: ${(summary.totalDistance / 1609.34).toFixed(2)} miles`);
-        console.log(`Time: ${(summary.totalTime / 3600).toFixed(2)} hours`);
-    });
-
-    routingControl.on('routingerror', function(e) {
-        console.error("Routing error:", e);
-        alert("Error calculating route. Please try again.");
-    });
-}
-
-function translateToEnglish(text) {
-    return text;
-}
-
-document.getElementById('start-timer').addEventListener('click', function() {
-    const hours = parseInt(document.getElementById('hours').value) || 0;
-    const minutes = parseInt(document.getElementById('minutes').value) || 0;
-    const seconds = parseInt(document.getElementById('seconds').value) || 0;
-    remainingTime = hours * 3600 + minutes * 60 + seconds;
-    updateTimerDisplay();
-
-    if (timerInterval) clearInterval(timerInterval);
-
-    timerInterval = setInterval(() => {
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-            alert("Time's up!");
-        } else {
-            remainingTime--;
-            updateTimerDisplay();
-        }
-    }, 1000);
-});
-
-document.getElementById('pause-timer').addEventListener('click', function() {
-    clearInterval(timerInterval);
-});
-
-document.getElementById('reset-timer').addEventListener('click', function() {
-    clearInterval(timerInterval);
-    remainingTime = 0;
-    document.getElementById('hours').value = '';
-    document.getElementById('minutes').value = '';
-    document.getElementById('seconds').value = '';
-    updateTimerDisplay();
-});
-
-function updateTimerDisplay() {
-    const hours = Math.floor(remainingTime / 3600).toString().padStart(2, '0');
-    const minutes = Math.floor((remainingTime % 3600) / 60).toString().padStart(2, '0');
-    const seconds = (remainingTime % 60).toString().padStart(2, '0');
-    document.getElementById('timer-display').textContent = `${hours}:${minutes}:${seconds}`;
-}
-
-document.addEventListener('mousemove', function(e) {
-    document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
-});
