@@ -72,9 +72,9 @@ function calculateAndDisplayRoute(start, end) {
      router: L.Routing.openrouteservice(API_KEY, {
      profile: "driving-car",
      options: {
-         language: "en"
-         }
-     }),
+     language: "en"
+     }
+    }),
          language: "en",
          routeWhileDragging: true,
          showAlternatives: true,
