@@ -62,31 +62,34 @@ async function geocode(address) {
 }
 
 function calculateAndDisplayRoute(start, end) {
- if (routingControl) {
-     map.removeControl(routingControl);
-     }
+    if (routingControl) {
+        map.removeControl(routingControl);
+    }
 
- try {
-     routingControl = L.Routing.control({
-     waypoints: [start, end],
-     router: L.Routing.openrouteservice(API_KEY, {
-     profile: "driving-car",
-     options: {
-     language: "en"
-     }
-    }),
-         language: "en",
-         routeWhileDragging: true,
-         showAlternatives: true,
-         units: "imperial",
-         lineOptions: {
-         styles: [{ color: "#4a90e2", opacity: 0.7, weight: 6 }]
-         }
-     }).addTo(map);
- } catch (error) {
- console.error("Routing initialization failed:", error);
- alert("Failed to initialize routing. Please try again.");
- }
+    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
+        profile: "driving-car",
+        timeout: 60000,
+        language: 'en-us',
+        units: 'mi'
+    });
+
+    try {
+        routingControl = L.Routing.control({
+            language: 'en',
+            waypoints: [start, end],
+            router: osrRouter,
+            routeWhileDragging: true,
+            showAlternatives: true,
+            units: 'imperial',
+            lineOptions: {
+                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+            }
+        }).addTo(map);
+
+    } catch (error) {
+        console.error("Routing initialization failed:", error);
+        alert("Failed to initialize routing. Please try again.");
+    }
 }
 
 
