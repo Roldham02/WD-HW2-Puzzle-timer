@@ -66,13 +66,16 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
+    const graphHopperRouter = L.Routing.graphHopper(API_KEY, {
+        profile: "car",
+        language: 'en',
+        units: 'mi'
+    });
+
     try {
         routingControl = L.Routing.control({
             waypoints: [start, end],
-            router: L.Routing.graphHopper(API_KEY, {
-                language: 'en',
-                units: 'imperial'
-            }),
+            router: graphHopperRouter,
             routeWhileDragging: true,
             showAlternatives: true,
             lineOptions: {
