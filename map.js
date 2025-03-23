@@ -2,7 +2,7 @@ let map;
 let routingControl;
 let timerInterval;
 let remainingTime = 0;
-const API_KEY = 'YOUR_GRAPHHOPPER_API_KEY';
+const API_KEY = 'd30672bb-2ee0-41b1-9beb-5f22fc0ba2e6';
 
 function initMap() {
     try {
