@@ -66,22 +66,21 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const graphHopperRouter = L.Routing.graphHopper(API_KEY, {
-        profile: "car",
-        language: 'en',
-        units: 'mi'
-    });
+    const graphHopperRouter = new L.Routing.GraphHopper(API_KEY, {
+    profile: "car",
+    language: 'en-us',
+    units: 'mi'
+});
 
-    try {
-        routingControl = L.Routing.control({
-            waypoints: [start, end],
-            router: graphHopperRouter,
-            routeWhileDragging: true,
-            showAlternatives: true,
-            lineOptions: {
-                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-            }
-        }).addTo(map);
+routingControl = L.Routing.control({
+    waypoints: [start, end],
+    router: graphHopperRouter,
+    routeWhileDragging: true,
+    showAlternatives: true,
+    lineOptions: {
+        styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+    }
+}).addTo(map);
 
         routingControl.on('routesfound', function(e) {
             var routes = e.routes;
