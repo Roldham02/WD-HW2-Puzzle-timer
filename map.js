@@ -99,7 +99,6 @@ function calculateAndDisplayRoute(start, end) {
     }
 }
 
-}
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
