@@ -81,22 +81,11 @@ routingControl = L.Routing.control({
         styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
     }
 }).addTo(map);
-
-        routingControl.on('routesfound', function(e) {
-            var routes = e.routes;
-            var summary = routes[0].summary;
-            var instructions = routes[0].instructions;
-        });
-
-        routingControl.on('routingerror', function(e) {
-            console.error("Routing error:", e);
-            alert("Error calculating route. Please try again.");
-        });
-    } catch (error) {
+     
+    catch (error) {
         console.error("Routing initialization failed:", error);
         alert("Failed to initialize routing. Please try again.");
     }
-}
 
 
 document.getElementById('start-timer').addEventListener('click', function() {
