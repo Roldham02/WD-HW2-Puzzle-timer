@@ -22,23 +22,28 @@ function initMap() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
-});
+    const showRouteButton = document.getElementById('show-route');
 
-document.getElementById('show-route').addEventListener('click', async function() {
-    const startAddress = document.getElementById('start-address').value;
-    const endAddress = document.getElementById('end-address').value;
+    if (showRouteButton) {
+        showRouteButton.addEventListener('click', async function() {
+            const startAddress = document.getElementById('start-address').value;
+            const endAddress = document.getElementById('end-address').value;
 
-    if (startAddress && endAddress) {
-        try {
-            const startCoords = await geocode(startAddress);
-            const endCoords = await geocode(endAddress);
-            calculateAndDisplayRoute(startCoords, endCoords);
-        } catch (error) {
-            console.error("Error calculating route:", error);
-            alert("Error: " + error.message);
-        }
+            if (startAddress && endAddress) {
+                try {
+                    const startCoords = await geocode(startAddress);
+                    const endCoords = await geocode(endAddress);
+                    calculateAndDisplayRoute(startCoords, endCoords);
+                } catch (error) {
+                    console.error("Error calculating route:", error);
+                    alert("Error: " + error.message);
+                }
+            } else {
+                alert("Please enter both start and end locations.");
+            }
+        });
     } else {
-        alert("Please enter both start and end locations.");
+        console.error("The 'show-route' button was not found in the DOM.");
     }
 });
 
@@ -66,7 +71,7 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const graphHopperRouter = L.Routing.graphhopper(API_KEY, {
+    const graphHopperRouter = new L.Routing.GraphHopper(API_KEY, {
         profile: "car",
         language: 'en-us',
         units: 'mi'
