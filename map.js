@@ -2,7 +2,7 @@ let map;
 let routingControl;
 let timerInterval;
 let remainingTime = 0;
-const API_KEY = '5b3ce3597851110001cf6248f4c1898499f24dd7915143628c3967b5';
+const API_KEY = 'YOUR_GRAPHHOPPER_API_KEY';
 
 function initMap() {
     try {
@@ -66,37 +66,43 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        profile : "driving-hgv",
-        timeout: 60000,
-        options: {
-            language: "en"
-        },
-        language: 'en-us',
-        units: 'mi'
-    });
-
     try {
         routingControl = L.Routing.control({
             waypoints: [start, end],
-            router: osrRouter,
+            router: new L.Routing.GraphHopper(API_KEY, {
+                language: 'en',
+                units: 'imperial'
+            }),
             routeWhileDragging: true,
             showAlternatives: true,
-            units: 'imperial',
-            options:{
-                language: "en"
-            },
             lineOptions: {
                 styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
             }
         }).addTo(map);
 
+        routingControl.on('routesfound', function(e) {
+            var routes = e.routes;
+            var summary = routes[0].summary;
+            summary.totalDistance = summary.totalDistance / 1609.34;
+            summary.totalTime = summary.totalTime / 3600;
+
+            var instructions = routes[0].instructions;
+            instructions.forEach(function(instruction) {
+                if (instruction.distance) {
+                    instruction.distance = instruction.distance / 1609.34;
+                }
+            });
+        });
+
+        routingControl.on('routingerror', function(e) {
+            console.error("Routing error:", e);
+            alert("Error calculating route. Please try again.");
+        });
     } catch (error) {
         console.error("Routing initialization failed:", error);
         alert("Failed to initialize routing. Please try again.");
     }
 }
-
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
