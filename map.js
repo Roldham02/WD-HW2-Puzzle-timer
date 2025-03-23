@@ -71,17 +71,17 @@ function calculateAndDisplayRoute(start, end) {
      waypoints: [start, end],
      router: L.Routing.openrouteservice(API_KEY, {
      profile: "driving-car",
-         options: {
+     options: {
          language: "en"
-     }
- }),
-     language: "en",
-     routeWhileDragging: true,
-     showAlternatives: true,
-     units: "imperial",
-     lineOptions: {
-     styles: [{ color: "#4a90e2", opacity: 0.7, weight: 6 }]
-     }
+         }
+     }),
+         language: "en",
+         routeWhileDragging: true,
+         showAlternatives: true,
+         units: "imperial",
+         lineOptions: {
+         styles: [{ color: "#4a90e2", opacity: 0.7, weight: 6 }]
+         }
      }).addTo(map);
  } catch (error) {
  console.error("Routing initialization failed:", error);
