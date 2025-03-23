@@ -69,7 +69,7 @@ function calculateAndDisplayRoute(start, end) {
     try {
         routingControl = L.Routing.control({
             waypoints: [start, end],
-            router: new L.Routing.GraphHopper(API_KEY, {
+            router: L.Routing.graphHopper(API_KEY, {
                 language: 'en',
                 units: 'imperial'
             }),
@@ -83,15 +83,7 @@ function calculateAndDisplayRoute(start, end) {
         routingControl.on('routesfound', function(e) {
             var routes = e.routes;
             var summary = routes[0].summary;
-            summary.totalDistance = summary.totalDistance / 1609.34;
-            summary.totalTime = summary.totalTime / 3600;
-
             var instructions = routes[0].instructions;
-            instructions.forEach(function(instruction) {
-                if (instruction.distance) {
-                    instruction.distance = instruction.distance / 1609.34;
-                }
-            });
         });
 
         routingControl.on('routingerror', function(e) {
@@ -102,6 +94,8 @@ function calculateAndDisplayRoute(start, end) {
         console.error("Routing initialization failed:", error);
         alert("Failed to initialize routing. Please try again.");
     }
+}
+
 }
 
 document.getElementById('start-timer').addEventListener('click', function() {
