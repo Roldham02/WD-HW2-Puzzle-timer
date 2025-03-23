@@ -79,9 +79,9 @@ routingControl = L.Routing.control({
     showAlternatives: true,
     lineOptions: {
         styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-    }
-}).addTo(map);
-    
+        }
+    }).addTo(map);'
+}
 
 
 document.getElementById('start-timer').addEventListener('click', function() {
