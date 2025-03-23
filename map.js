@@ -81,11 +81,7 @@ routingControl = L.Routing.control({
         styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
     }
 }).addTo(map);
-     
-    catch (error) {
-        console.error("Routing initialization failed:", error);
-        alert("Failed to initialize routing. Please try again.");
-    }
+    
 
 
 document.getElementById('start-timer').addEventListener('click', function() {
