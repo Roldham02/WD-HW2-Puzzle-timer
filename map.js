@@ -67,7 +67,7 @@ function calculateAndDisplayRoute(start, end) {
     }
 
     const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        
+        profile : driving,
         timeout: 60000,
         options: {
             language: "en"
