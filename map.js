@@ -71,7 +71,7 @@ function calculateAndDisplayRoute(start, end) {
         timeout: 60000,
         options: {
             language: "en"
-        }
+        },
         language: 'en-us',
         units: 'mi'
     });
@@ -85,7 +85,7 @@ function calculateAndDisplayRoute(start, end) {
             units: 'imperial',
             options:{
                 language: "en"
-            }
+            },
             lineOptions: {
                 styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
             }
