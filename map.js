@@ -62,51 +62,31 @@ async function geocode(address) {
 }
 
 function calculateAndDisplayRoute(start, end) {
-    if (routingControl) {
-        map.removeControl(routingControl);
-    }
+ if (routingControl) {
+     map.removeControl(routingControl);
+     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY);
-    osrRouter.options.profile = "driving-car";
-    osrRouter.options.language = "en";
-
-    try {
-        routingControl = L.Routing.control({
-            waypoints: [start, end],
-            router: osrRouter,
-            language: 'en',
-            routeWhileDragging: true,
-            showAlternatives: true,
-            units: 'imperial',
-            lineOptions: {
-                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-            }
-        }).addTo(map);
-
-        routingControl.on('routesfound', function(e) {
-            var routes = e.routes;
-            var summary = routes[0].summary;
-            summary.totalDistance = summary.totalDistance / 1609.34;
-            summary.totalTime = summary.totalTime / 3600;
-
-            var instructions = routes[0].instructions;
-            instructions.forEach(function(instruction) {
-                if (instruction.distance) {
-                    instruction.distance = instruction.distance / 1609.34;
-                }
-            });
-        });
-
-        routingControl.on('routingerror', function(e) {
-            console.error("Routing error:", e);
-            console.log("Start point:", start);
-            console.log("End point:", end);
-            alert("Error calculating route. Please try again.");
-        });
-    } catch (error) {
-        console.error("Routing initialization failed:", error);
-        alert("Failed to initialize routing. Please try again.");
-    }
+ try {
+     routingControl = L.Routing.control({
+     waypoints: [start, end],
+     router: L.Routing.openrouteservice(API_KEY, {
+     profile: "driving-car",
+         options: {
+         language: "en"
+     }
+ }),
+     language: "en",
+     routeWhileDragging: true,
+     showAlternatives: true,
+     units: "imperial",
+     lineOptions: {
+     styles: [{ color: "#4a90e2", opacity: 0.7, weight: 6 }]
+     }
+     }).addTo(map);
+ } catch (error) {
+ console.error("Routing initialization failed:", error);
+ alert("Failed to initialize routing. Please try again.");
+ }
 }
 
 
