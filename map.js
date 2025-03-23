@@ -80,7 +80,7 @@ routingControl = L.Routing.control({
     lineOptions: {
         styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
         }
-    }).addTo(map);'
+    }).addTo(map);
 }
 
 
