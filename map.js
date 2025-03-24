@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: 'OpenStreetMap contributors'
+            attribution: '© OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
