@@ -2,7 +2,7 @@ let map;
 let routingControl;
 let timerInterval;
 let remainingTime = 0;
-const API_KEY = 'd30672bb-2ee0-41b1-9beb-5f22fc0ba2e6';
+const API_KEY = '5b3ce3597851110001cf6248f4c1898499f24dd7915143628c3967b5';
 
 function initMap() {
     try {
@@ -66,22 +66,37 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const graphHopperRouter = new L.Routing.GraphHopper(API_KEY, {
-        profile: "car",
+    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
+        profile : "driving-hgv",
+        timeout: 60000,
+        options: {
+            language: "en"
+        },
         language: 'en-us',
         units: 'mi'
     });
 
-    routingControl = L.Routing.control({
-        waypoints: [start, end],
-        router: graphHopperRouter,
-        routeWhileDragging: true,
-        showAlternatives: true,
-        lineOptions: {
-            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-        }
-    }).addTo(map);
+    try {
+        routingControl = L.Routing.control({
+            waypoints: [start, end],
+            router: osrRouter,
+            routeWhileDragging: true,
+            showAlternatives: true,
+            units: 'imperial',
+            options:{
+                language: "en"
+            },
+            lineOptions: {
+                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+            }
+        }).addTo(map);
+
+    } catch (error) {
+        console.error("Routing initialization failed:", error);
+        alert("Failed to initialize routing. Please try again.");
+    }
 }
+
 
 document.getElementById('start-timer').addEventListener('click', function() {
     const hours = parseInt(document.getElementById('hours').value) || 0;
