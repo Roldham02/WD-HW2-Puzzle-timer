@@ -2,7 +2,7 @@ let map;
 let routingControl;
 let timerInterval;
 let remainingTime = 0;
-const API_KEY = '5b3ce3597851110001cf6248f4c1898499f24dd7915143628c3967b5';
+const API_KEY = 'd30672bb-2ee0-41b1-9beb-5f22fc0ba2e6'; 
 
 function initMap() {
     try {
@@ -22,6 +22,7 @@ function initMap() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
+    restoreTimerState();
 });
 
 document.getElementById('show-route').addEventListener('click', async function() {
@@ -66,43 +67,52 @@ function calculateAndDisplayRoute(start, end) {
         map.removeControl(routingControl);
     }
 
-    const osrRouter = new L.Routing.OpenRouteService(API_KEY, {
-        profile : "driving-hgv",
-        timeout: 60000,
-        options: {
-            language: "en"
-        },
-        language: 'en-us',
-        units: 'mi'
+    const orsRouter = L.Routing.openrouteservice(API_KEY, {
+        timeout: 30 * 1000,
+        format: 'json',
+        host: 'https://api.openrouteservice.org',
+        service: 'directions',
+        api_version: 'v2',
+        profile: 'driving-car',
+        routingQueryParams: {
+            options: {
+                avoid_features: ['ferries', 'tunnels'],
+                round_trip: {
+                    length: 10000,  // 10km round trip
+                    points: 4,
+                    seed: 42
+                }
+            }
+        }
     });
 
-    try {
-        routingControl = L.Routing.control({
-            waypoints: [start, end],
-            router: osrRouter,
-            routeWhileDragging: true,
-            showAlternatives: true,
-            units: 'imperial',
-            options:{
-                language: "en"
-            },
-            lineOptions: {
-                styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
-            }
-        }).addTo(map);
+    routingControl = L.Routing.control({
+        waypoints: start === end ? [start] : [start, end],
+        router: orsRouter,
+        routeWhileDragging: true,
+        lineOptions: {
+            styles: [{color: '#4a90e2', opacity: 0.7, weight: 6}]
+        }
+    }).addTo(map);
 
-    } catch (error) {
-        console.error("Routing initialization failed:", error);
-        alert("Failed to initialize routing. Please try again.");
-    }
+    routingControl.on('routeselected', (e) => {
+        const route = e.route;
+        const duration = Math.round(route.summary.totalTime / 60);
+        const distance = (route.summary.totalDistance / 1000).toFixed(2);
+        document.getElementById('route-info').innerHTML = `
+            <p>Route duration: ${duration} minutes</p>
+            <p>Route distance: ${distance} km</p>
+        `;
+    });
+
+    routingControl.on('routingerror', (e) => {
+        console.error('Routing error:', e.error);
+        alert(`Routing failed: ${e.error.message}`);
+    });
 }
 
-
-document.getElementById('start-timer').addEventListener('click', function() {
-    const hours = parseInt(document.getElementById('hours').value) || 0;
-    const minutes = parseInt(document.getElementById('minutes').value) || 0;
-    const seconds = parseInt(document.getElementById('seconds').value) || 0;
-    remainingTime = hours * 3600 + minutes * 60 + seconds;
+function startTimer(initialTime) {
+    remainingTime = initialTime;
     updateTimerDisplay();
 
     if (timerInterval) clearInterval(timerInterval);
@@ -117,14 +127,25 @@ document.getElementById('start-timer').addEventListener('click', function() {
             saveTimerState();
         }
     }, 1000);
+}
+
+document.getElementById('start-timer').addEventListener('click', function() {
+    if (!validateTimeInputs()) return;
+    const hours = parseInt(document.getElementById('hours').value) || 0;
+    const minutes = parseInt(document.getElementById('minutes').value) || 0;
+    const seconds = parseInt(document.getElementById('seconds').value) || 0;
+    startTimer(hours * 3600 + minutes * 60 + seconds);
 });
 
 document.getElementById('pause-timer').addEventListener('click', function() {
     clearInterval(timerInterval);
+    timerInterval = null;
+    saveTimerState();
 });
 
 document.getElementById('reset-timer').addEventListener('click', function() {
     clearInterval(timerInterval);
+    timerInterval = null;
     remainingTime = 0;
     document.getElementById('hours').value = '';
     document.getElementById('minutes').value = '';
@@ -143,19 +164,58 @@ function updateTimerDisplay() {
 function saveTimerState() {
     localStorage.setItem('timerState', JSON.stringify({
         remainingTime,
-        lastUpdated: Date.now()
+        lastUpdated: Date.now(),
+        isRunning: !!timerInterval
     }));
 }
 
-document.addEventListener('mousemove', function(e) {
-    document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
-});
-
-document.addEventListener('DOMContentLoaded', function() {
+function restoreTimerState() {
     const savedState = JSON.parse(localStorage.getItem('timerState'));
     if (savedState) {
         const elapsedTime = Math.floor((Date.now() - savedState.lastUpdated) / 1000);
         remainingTime = Math.max(0, savedState.remainingTime - elapsedTime);
         updateTimerDisplay();
+        if (savedState.isRunning) {
+            startTimer(remainingTime);
+        }
+    }
+}
+
+function validateTimeInputs() {
+    const minutes = document.getElementById('minutes');
+    const seconds = document.getElementById('seconds');
+    
+    if (parseInt(minutes.value) > 59) {
+        alert('Minutes must be between 0 and 59');
+        return false;
+    }
+    if (parseInt(seconds.value) > 59) {
+        alert('Seconds must be between 0 and 59');
+        return false;
+    }
+    return true;
+}
+
+
+let lastUpdate = 0;
+document.addEventListener('mousemove', function(e) {
+    const now = Date.now();
+    if (now - lastUpdate >= 100) { // Update every 100ms
+        document.getElementById('mouse-tracker').textContent = `X: ${e.clientX}, Y: ${e.clientY}`;
+        lastUpdate = now;
+    }
+});
+
+document.addEventListener('keydown', function(e) {
+    if (e.code === 'Space') {
+        e.preventDefault();
+        if (timerInterval) {
+            document.getElementById('pause-timer').click();
+        } else {
+            document.getElementById('start-timer').click();
+        }
+    } else if (e.code === 'Enter' && document.activeElement.tagName !== 'INPUT') {
+        e.preventDefault();
+        document.getElementById('show-route').click();
     }
 });
