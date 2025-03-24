@@ -8,7 +8,7 @@ function initMap() {
     try {
         map = L.map('map').setView([31.8086111, -85.97], 13);
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '© OpenStreetMap contributors'
+            attribution: 'OpenStreetMap contributors'
         }).addTo(map);
 
         setTimeout(() => {
@@ -22,28 +22,23 @@ function initMap() {
 
 document.addEventListener('DOMContentLoaded', function() {
     initMap();
-    const showRouteButton = document.getElementById('show-route');
+});
 
-    if (showRouteButton) {
-        showRouteButton.addEventListener('click', async function() {
-            const startAddress = document.getElementById('start-address').value;
-            const endAddress = document.getElementById('end-address').value;
+document.getElementById('show-route').addEventListener('click', async function() {
+    const startAddress = document.getElementById('start-address').value;
+    const endAddress = document.getElementById('end-address').value;
 
-            if (startAddress && endAddress) {
-                try {
-                    const startCoords = await geocode(startAddress);
-                    const endCoords = await geocode(endAddress);
-                    calculateAndDisplayRoute(startCoords, endCoords);
-                } catch (error) {
-                    console.error("Error calculating route:", error);
-                    alert("Error: " + error.message);
-                }
-            } else {
-                alert("Please enter both start and end locations.");
-            }
-        });
+    if (startAddress && endAddress) {
+        try {
+            const startCoords = await geocode(startAddress);
+            const endCoords = await geocode(endAddress);
+            calculateAndDisplayRoute(startCoords, endCoords);
+        } catch (error) {
+            console.error("Error calculating route:", error);
+            alert("Error: " + error.message);
+        }
     } else {
-        console.error("The 'show-route' button was not found in the DOM.");
+        alert("Please enter both start and end locations.");
     }
 });
 
